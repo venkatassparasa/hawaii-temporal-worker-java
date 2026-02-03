@@ -16,6 +16,10 @@ public class HealthController {
     @Autowired(required = false)
     private Worker worker;
 
+    // Inject the client to access the Namespace
+    @Autowired(required = false)
+    private io.temporal.client.WorkflowClient workflowClient;
+
     @GetMapping("/health")
     public Map<String, Object> health() {
         Map<String, Object> response = new HashMap<>();
@@ -23,24 +27,17 @@ public class HealthController {
         response.put("service", "Hawaii Compliance Temporal Worker");
         response.put("timestamp", System.currentTimeMillis());
         response.put("workerRunning", worker != null);
-        
+
         if (worker != null) {
             response.put("taskQueue", worker.getTaskQueue());
-            response.put("namespace", worker.getNamespace());
-        }
-        
-        return response;
-    }
 
-    @GetMapping("/info")
-    public Map<String, Object> info() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("service", "Hawaii Compliance Temporal Worker");
-        response.put("version", "1.0.0");
-        response.put("description", "Temporal Worker for Hawaii Compliance Dashboard");
-        response.put("workflows", new String[]{"TVRRegistrationWorkflow", "ComplaintInvestigationWorkflow", "ViolationAppealWorkflow", "AnnualInspectionWorkflow"});
-        response.put("activities", new String[]{"performInitialReview", "verifyZoning", "processNCUC", "scheduleInspection", "finalizeRegistration", "performInitialAssessment", "collectEvidence", "conductSiteVisit", "generateInvestigationReport", "determineViolations", "generateNotice", "reviewAppealDocuments", "performLegalReview", "scheduleHearing", "makeAppealDecision", "notifyAppealDecision", "scheduleInspectionDate", "conductOnSiteInspection", "generateInspectionReport", "scheduleFollowUp", "verifyCompliance"});
-        
+            // Fix: Get namespace from the client instead of the worker
+            if (workflowClient != null) {
+                response.put("namespace", workflowClient.getOptions().getNamespace());
+            }
+        }
+
         return response;
     }
+    // ... rest of your code
 }

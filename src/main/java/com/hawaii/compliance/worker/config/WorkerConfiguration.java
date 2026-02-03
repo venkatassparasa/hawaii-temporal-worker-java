@@ -1,7 +1,7 @@
 package com.hawaii.compliance.worker.config;
 
 import com.hawaii.compliance.worker.activities.ComplianceActivitiesImpl;
-import com.hawaii.compliance.worker.workflows.ComplianceWorkflowsImpl;
+import com.hawaii.compliance.worker.workflows.impl.ComplianceWorkflowsImpl;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
