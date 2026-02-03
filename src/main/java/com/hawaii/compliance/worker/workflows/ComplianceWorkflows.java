@@ -11,16 +11,5 @@ import java.time.Duration;
 @WorkflowInterface
 public interface ComplianceWorkflows {
 
-    @WorkflowMethod
-    WorkflowResult TVRRegistrationWorkflow(TVRApplication application);
-
-    @WorkflowMethod
-    WorkflowResult ComplaintInvestigationWorkflow(Complaint complaint);
-
-    @WorkflowMethod
-    WorkflowResult ViolationAppealWorkflow(Appeal appeal);
-
-    @WorkflowMethod
-    WorkflowResult AnnualInspectionWorkflow(AnnualInspection inspection);
 }
 

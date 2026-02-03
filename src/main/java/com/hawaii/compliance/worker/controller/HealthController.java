@@ -39,5 +39,16 @@ public class HealthController {
 
         return response;
     }
-    // ... rest of your code
+
+    @GetMapping("/info")
+    public Map<String, Object> info() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("service", "Hawaii Compliance Temporal Worker");
+        response.put("version", "1.0.0");
+        response.put("description", "Temporal Worker for Hawaii Compliance Dashboard");
+        response.put("workflows", new String[]{"TVRRegistrationWorkflow", "ComplaintInvestigationWorkflow", "ViolationAppealWorkflow", "AnnualInspectionWorkflow"});
+        response.put("activities", new String[]{"performInitialReview", "verifyZoning", "processNCUC", "scheduleInspection", "finalizeRegistration", "performInitialAssessment", "collectEvidence", "conductSiteVisit", "generateInvestigationReport", "determineViolations", "generateNotice", "reviewAppealDocuments", "conductLegalReview", "scheduleHearing", "makeAppealDecision", "scheduleAnnualInspection", "conductOnSiteInspection", "generateInspectionReport", "processFollowUpActions", "determineComplianceStatus"});
+        
+        return response;
+    }
 }

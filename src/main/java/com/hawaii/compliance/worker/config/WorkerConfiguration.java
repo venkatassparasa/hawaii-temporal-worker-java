@@ -1,6 +1,10 @@
 package com.hawaii.compliance.worker.config;
 
 import com.hawaii.compliance.worker.activities.ComplianceActivitiesImpl;
+import com.hawaii.compliance.worker.workflows.AnnualInspectionWorkflow;
+import com.hawaii.compliance.worker.workflows.ComplaintInvestigationWorkflow;
+import com.hawaii.compliance.worker.workflows.TVRRegistrationWorkflow;
+import com.hawaii.compliance.worker.workflows.ViolationAppealWorkflow;
 import com.hawaii.compliance.worker.workflows.impl.ComplianceWorkflowsImpl;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
@@ -24,11 +28,20 @@ public class WorkerConfiguration {
         Worker worker = workerFactory.newWorker(taskQueue);
         
         // Register workflows
-        worker.registerWorkflowImplementationTypes(ComplianceWorkflowsImpl.class);
-        
-        // Register activities
-        worker.registerActivitiesImplementations(new ComplianceActivitiesImpl());
-        
+        worker.registerWorkflowImplementationTypes(
+                TVRRegistrationWorkflow.class,
+                ComplaintInvestigationWorkflow.class,
+                ViolationAppealWorkflow.class,
+                AnnualInspectionWorkflow.class
+        );
+
+        worker.registerActivitiesImplementations(
+                TVRRegistrationWorkflow.class,
+                ComplaintInvestigationWorkflow.class,
+                ViolationAppealWorkflow.class,
+                AnnualInspectionWorkflow.class
+        );
+
         // Start the worker
         workerFactory.start();
         
