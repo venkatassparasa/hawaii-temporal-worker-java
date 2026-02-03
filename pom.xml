@@ -50,6 +50,12 @@
             <artifactId>temporal-spring-boot-starter-alpha</artifactId>
             <version>${temporal.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.temporal</groupId>
+            <artifactId>temporal-serviceclient</artifactId>
+            <version>${temporal.version}</version>
+        </dependency>
+
 
         <!-- Utilities -->
         <dependency>
