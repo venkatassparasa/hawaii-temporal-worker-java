@@ -27,7 +27,7 @@ public class TemporalConfiguration {
 
     @Bean
     public WorkflowServiceStubs workflowServiceStubs() {
-        return WorkflowServiceStubs.newWorkflowServiceStubs(
+        return WorkflowServiceStubs.newInstance(
             WorkflowServiceStubsOptions.newBuilder()
                 .setTarget(temporalTarget)
                 .build());

@@ -4,6 +4,8 @@ import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import org.springframework.stereotype.Component;
 
+import com.hawaii.compliance.worker.dtos.*;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -28,87 +30,104 @@ public class ComplianceActivitiesImpl implements ComplianceActivities {
     @Override
     public InitialReviewResult performInitialReview(TVRApplication application) {
         logger.info("Performing initial review for application: {}", application.getApplicationId());
-        simulateDelay(1);
+        simulateDelay(2);
         
-        if (application.getPropertyId() == null || application.getApplicantName() == null) {
-            throw Activity.wrap(new IllegalArgumentException("Missing required application information"));
-        }
+        // Simulate approval logic
+        boolean approved = ThreadLocalRandom.current().nextBoolean();
+        String reason = approved ? "Application meets initial requirements" : "Missing documentation";
         
-        return new InitialReviewResult(true, "Application passed initial review");
+        return new InitialReviewResult(approved, reason);
     }
 
     @Override
     public ZoningResult verifyZoning(String propertyId) {
         logger.info("Verifying zoning for property: {}", propertyId);
-        simulateDelay(2);
-        return new ZoningResult(true, "R-1");
-    }
-
-    @Override
-    public NCUCResult processNCUC(TVRApplication application) {
-        logger.info("Processing NCUC application for: {}", application.getApplicationId());
         simulateDelay(3);
-        return new NCUCResult(true, "NCUC-" + System.currentTimeMillis(), "3 days");
+        
+        boolean compliant = ThreadLocalRandom.current().nextBoolean();
+        String violationType = compliant ? null : "Residential zoning violation";
+        
+        return new ZoningResult(compliant, violationType);
     }
 
     @Override
-    public InspectionResult scheduleInspection(TVRApplication application) {
-        logger.info("Scheduling inspection for: {}", application.getApplicationId());
-        simulateDelay(1);
-        Instant scheduledDate = Instant.now().plus(7, ChronoUnit.DAYS);
-        return new InspectionResult("INS-" + System.currentTimeMillis(), scheduledDate.toString(), "County Inspector");
+    public NCUCResult processNCUC(String applicationId) {
+        logger.info("Processing NCUC for application: {}", applicationId);
+        simulateDelay(4);
+        
+        boolean approved = ThreadLocalRandom.current().nextBoolean();
+        String ncucNumber = approved ? "NCUC-" + System.currentTimeMillis() : null;
+        
+        return new NCUCResult(approved, ncucNumber);
     }
 
     @Override
-    public RegistrationResult finalizeRegistration(TVRApplication application, InspectionResult inspection) {
-        logger.info("Finalizing registration for: {}", application.getApplicationId());
+    public InspectionSchedulingResult scheduleInspection(TVRApplication application) {
+        logger.info("Scheduling inspection for application: {}", application.getApplicationId());
+        simulateDelay(2);
+        
+        String inspectionId = "INSPECT-" + System.currentTimeMillis();
+        String scheduledDate = Instant.now().plus(7, ChronoUnit.DAYS).toString();
+        
+        return new InspectionSchedulingResult(inspectionId, scheduledDate);
+    }
+
+    @Override
+    public RegistrationResult finalizeRegistration(TVRApplication application) {
+        logger.info("Finalizing registration for application: {}", application.getApplicationId());
         simulateDelay(1);
-        return new RegistrationResult("REG-" + System.currentTimeMillis(), Instant.now().toString(), "TVR-" + System.currentTimeMillis());
+        
+        String registrationId = "TVR-" + System.currentTimeMillis();
+        String registrationDate = Instant.now().toString();
+        
+        return new RegistrationResult(registrationId, registrationDate);
     }
 
     // Complaint Investigation Activities
     @Override
-    public AssessmentResult performInitialAssessment(Complaint complaint) {
+    public ActivityResult performInitialAssessment(Complaint complaint) {
         logger.info("Performing initial assessment for complaint: {}", complaint.getComplaintId());
-        simulateDelay(1);
-        return new AssessmentResult(true, complaint.getPriority(), "5-7 days");
-    }
-
-    @Override
-    public EvidenceResult collectEvidence(Complaint complaint) {
-        logger.info("Collecting evidence for complaint: {}", complaint.getComplaintId());
         simulateDelay(2);
-        return new EvidenceResult();
+        return new ActivityResult(true, "Initial assessment completed", "ASSESS-" + complaint.getComplaintId(), null);
     }
 
     @Override
-    public SiteVisitResult conductSiteVisit(Complaint complaint, EvidenceResult evidence) {
+    public ActivityResult collectEvidence(Complaint complaint) {
+        logger.info("Collecting evidence for complaint: {}", complaint.getComplaintId());
+        simulateDelay(3);
+        return new ActivityResult(true, "Evidence collected", "EVIDENCE-" + complaint.getComplaintId(), null);
+    }
+
+    @Override
+    public ActivityResult conductSiteVisit(Complaint complaint) {
         logger.info("Conducting site visit for complaint: {}", complaint.getComplaintId());
-        simulateDelay(1);
-        return new SiteVisitResult(Instant.now().toString(), "Observations noted during site visit", 2);
+        simulateDelay(4);
+        return new ActivityResult(true, "Site visit completed", "VISIT-" + complaint.getComplaintId(), null);
     }
 
     @Override
-    public InvestigationReportResult generateInvestigationReport(Complaint complaint, EvidenceResult evidence, SiteVisitResult siteVisit) {
+    public ActivityResult generateInvestigationReport(Complaint complaint) {
         logger.info("Generating investigation report for complaint: {}", complaint.getComplaintId());
         simulateDelay(2);
-        return new InvestigationReportResult("RPT-" + System.currentTimeMillis(), "Investigation completed with findings", true);
+        return new ActivityResult(true, "Investigation report generated", "REPORT-" + complaint.getComplaintId(), null);
     }
 
     @Override
-    public ViolationDeterminationResult determineViolations(InvestigationReportResult report) {
-        logger.info("Determining violations based on report: {}", report.getReportId());
+    public ActivityResult determineViolations(Complaint complaint) {
+        logger.info("Determining violations for complaint: {}", complaint.getComplaintId());
         simulateDelay(1);
-        List<String> violationTypes = Arrays.asList("Noise violation", "Occupancy violation");
-        return new ViolationDeterminationResult(true, violationTypes, "Medium");
+        return new ActivityResult(true, "Violations determined", "VIOLATIONS-" + complaint.getComplaintId(), null);
     }
 
     @Override
-    public NoticeResult generateNotice(Complaint complaint, ViolationDeterminationResult determination) {
+    public NoticeResult generateNotice(Complaint complaint) {
         logger.info("Generating notice for complaint: {}", complaint.getComplaintId());
         simulateDelay(1);
-        Instant deadline = Instant.now().plus(30, ChronoUnit.DAYS);
-        return new NoticeResult("NOTICE-" + System.currentTimeMillis(), Instant.now().toString(), deadline.toString());
+        
+        String noticeId = "NOTICE-" + System.currentTimeMillis();
+        String noticeType = "Violation Notice";
+        
+        return new NoticeResult(noticeId, noticeType);
     }
 
     // Violation Appeal Activities
@@ -116,74 +135,100 @@ public class ComplianceActivitiesImpl implements ComplianceActivities {
     public AppealDocumentResult reviewAppealDocuments(Appeal appeal) {
         logger.info("Reviewing appeal documents for appeal: {}", appeal.getAppealId());
         simulateDelay(2);
-        return new AppealDocumentResult(true, 5);
+        
+        String documentId = "DOC-" + System.currentTimeMillis();
+        String documentType = "Appeal Document";
+        
+        return new AppealDocumentResult(documentId, documentType);
     }
 
     @Override
-    public LegalReviewResult performLegalReview(Appeal appeal, AppealDocumentResult documentReview) {
-        logger.info("Performing legal review for appeal: {}", appeal.getAppealId());
+    public LegalReviewResult conductLegalReview(Appeal appeal) {
+        logger.info("Conducting legal review for appeal: {}", appeal.getAppealId());
         simulateDelay(3);
-        return new LegalReviewResult("Valid legal grounds for appeal", "Proceed with hearing");
+        
+        boolean favorable = ThreadLocalRandom.current().nextBoolean();
+        String legalOpinion = favorable ? "Appeal has merit" : "Appeal lacks legal basis";
+        
+        return new LegalReviewResult(favorable, legalOpinion);
     }
 
     @Override
-    public HearingResult scheduleHearing(Appeal appeal, LegalReviewResult legalReview) {
+    public HearingResult scheduleHearing(Appeal appeal) {
         logger.info("Scheduling hearing for appeal: {}", appeal.getAppealId());
-        simulateDelay(1);
-        Instant hearingDate = Instant.now().plus(14, ChronoUnit.DAYS);
-        return new HearingResult(hearingDate.toString(), "County Courthouse", "Judge Smith");
-    }
-
-    @Override
-    public AppealDecisionResult makeAppealDecision(Appeal appeal, HearingResult hearing) {
-        logger.info("Making appeal decision for appeal: {}", appeal.getAppealId());
         simulateDelay(2);
-        return new AppealDecisionResult(false, "Appeal granted based on new evidence", Instant.now().toString());
+        
+        String hearingId = "HEARING-" + System.currentTimeMillis();
+        String hearingDate = Instant.now().plus(5, ChronoUnit.DAYS).toString();
+        String outcome = "Scheduled";
+        
+        return new HearingResult(hearingId, hearingDate, outcome);
     }
 
     @Override
-    public NotificationResult notifyAppealDecision(Appeal appeal, AppealDecisionResult decision) {
-        logger.info("Notifying parties of appeal decision: {}", appeal.getAppealId());
-        simulateDelay(0);
-        return new NotificationResult(true);
+    public AppealDecisionResult makeAppealDecision(Appeal appeal) {
+        logger.info("Making appeal decision for appeal: {}", appeal.getAppealId());
+        simulateDelay(1);
+        
+        boolean appealGranted = ThreadLocalRandom.current().nextBoolean();
+        String decisionReason = appealGranted ? "Appeal granted based on new evidence" : "Appeal denied";
+        
+        return new AppealDecisionResult(appealGranted, decisionReason);
     }
 
     // Annual Inspection Activities
     @Override
-    public InspectionSchedulingResult scheduleInspectionDate(AnnualInspection inspection) {
-        logger.info("Scheduling inspection date for: {}", inspection.getInspectionId());
-        simulateDelay(1);
-        Instant scheduledDate = Instant.now().plus(7, ChronoUnit.DAYS);
-        return new InspectionSchedulingResult(true, scheduledDate.toString(), "County Inspector");
+    public InspectionSchedulingResult scheduleAnnualInspection(AnnualInspection inspection) {
+        logger.info("Scheduling annual inspection for: {}", inspection.getInspectionId());
+        simulateDelay(2);
+        
+        String inspectionId = "ANNUAL-" + System.currentTimeMillis();
+        String scheduledDate = Instant.now().plus(14, ChronoUnit.DAYS).toString();
+        
+        return new InspectionSchedulingResult(inspectionId, scheduledDate);
     }
 
     @Override
     public OnSiteInspectionResult conductOnSiteInspection(AnnualInspection inspection) {
         logger.info("Conducting on-site inspection for: {}", inspection.getInspectionId());
-        simulateDelay(2);
-        return new OnSiteInspectionResult(Instant.now().toString(), "Property inspection completed", 1);
+        simulateDelay(4);
+        
+        boolean passed = ThreadLocalRandom.current().nextBoolean();
+        String inspectionNotes = passed ? "Property compliant" : "Violations found";
+        
+        return new OnSiteInspectionResult(passed, inspectionNotes);
     }
 
     @Override
-    public InspectionReportResult generateInspectionReport(AnnualInspection inspection, OnSiteInspectionResult onSiteInspection) {
+    public InspectionReportResult generateInspectionReport(AnnualInspection inspection) {
         logger.info("Generating inspection report for: {}", inspection.getInspectionId());
-        simulateDelay(1);
-        return new InspectionReportResult("INSP-" + System.currentTimeMillis(), "Annual inspection completed", false);
+        simulateDelay(2);
+        
+        String reportId = "REPORT-" + System.currentTimeMillis();
+        String reportUrl = "https://reports.hawaii.gov/" + reportId + ".pdf";
+        
+        return new InspectionReportResult(reportId, reportUrl);
     }
 
     @Override
-    public FollowUpResult scheduleFollowUp(AnnualInspection inspection, InspectionReportResult report) {
-        logger.info("Scheduling follow-up inspection for: {}", inspection.getInspectionId());
+    public FollowUpResult processFollowUpActions(AnnualInspection inspection) {
+        logger.info("Processing follow-up actions for: {}", inspection.getInspectionId());
         simulateDelay(1);
-        Instant followUpDate = Instant.now().plus(30, ChronoUnit.DAYS);
-        return new FollowUpResult(followUpDate.toString(), "Minor violations found", true);
+        
+        String followUpId = "FOLLOWUP-" + System.currentTimeMillis();
+        String followUpAction = "Schedule corrective actions";
+        
+        return new FollowUpResult(followUpId, followUpAction);
     }
 
     @Override
-    public ComplianceResult verifyCompliance(InspectionReportResult report) {
-        logger.info("Verifying compliance based on report: {}", report.getReportId());
+    public ComplianceResult determineComplianceStatus(AnnualInspection inspection) {
+        logger.info("Determining compliance status for: {}", inspection.getInspectionId());
         simulateDelay(1);
-        Instant nextInspection = Instant.now().plus(365, ChronoUnit.DAYS);
-        return new ComplianceResult(true, Arrays.asList(), nextInspection.toString());
+        
+        boolean compliant = ThreadLocalRandom.current().nextBoolean();
+        String complianceStatus = compliant ? "Fully Compliant" : "Non-Compliant";
+        
+        return new ComplianceResult(compliant, complianceStatus);
     }
 }
