@@ -1,16 +1,7 @@
 package com.hawaii.compliance.worker.activities;
 
-import com.hawaii.compliance.worker.dtos.InitialReviewResult;
-import com.hawaii.compliance.worker.dtos.results.AppealDecisionResult;
-import com.hawaii.compliance.worker.dtos.results.AppealDocumentResult;
-import com.hawaii.compliance.worker.dtos.results.ComplianceResult;
-import com.hawaii.compliance.worker.dtos.results.FollowUpResult;
-import com.hawaii.compliance.worker.dtos.results.HearingResult;
-import com.hawaii.compliance.worker.dtos.results.InspectionReportResult;
-import com.hawaii.compliance.worker.dtos.results.InspectionSchedulingResult;
-import com.hawaii.compliance.worker.dtos.results.LegalReviewResult;
-import com.hawaii.compliance.worker.dtos.results.NoticeResult;
-import com.hawaii.compliance.worker.dtos.results.OnSiteInspectionResult;
+import com.hawaii.compliance.worker.dtos.ZoningResult;
+import com.hawaii.compliance.worker.dtos.results.*;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 import org.springframework.stereotype.Component;

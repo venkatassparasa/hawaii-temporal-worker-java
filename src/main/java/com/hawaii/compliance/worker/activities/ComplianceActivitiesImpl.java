@@ -1,7 +1,7 @@
 package com.hawaii.compliance.worker.activities;
 
-import com.hawaii.compliance.worker.dtos.results.FollowUpResult;
-import com.hawaii.compliance.worker.dtos.results.InitialReviewResult;
+import com.hawaii.compliance.worker.dtos.ZoningResult;
+import com.hawaii.compliance.worker.dtos.results.*;
 import org.springframework.stereotype.Component;
 
 import com.hawaii.compliance.worker.dtos.*;
@@ -26,7 +26,7 @@ public class ComplianceActivitiesImpl implements ComplianceActivities {
 
     // TVR Registration Activities
     @Override
-    public com.hawaii.compliance.worker.dtos.InitialReviewResult performInitialReview(TVRApplication application) {
+    public InitialReviewResult performInitialReview(TVRApplication application) {
         logger.info("Performing initial review for application: {}", application.getApplicationId());
         simulateDelay(2);
         

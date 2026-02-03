@@ -1,5 +1,7 @@
 package com.hawaii.compliance.worker.dtos.results;
 
+import com.hawaii.compliance.worker.dtos.ActivityResult;
+
 public class InspectionReportResult extends ActivityResult {
     private String reportId;
     private String reportUrl;

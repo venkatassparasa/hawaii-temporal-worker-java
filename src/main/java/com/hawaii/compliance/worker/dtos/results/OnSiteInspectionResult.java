@@ -1,5 +1,7 @@
 package com.hawaii.compliance.worker.dtos.results;
 
+import com.hawaii.compliance.worker.dtos.ActivityResult;
+
 public class OnSiteInspectionResult extends ActivityResult {
     private boolean passed;
     private String inspectionNotes;

@@ -1,5 +1,7 @@
 package com.hawaii.compliance.worker.dtos.results;
 
+import com.hawaii.compliance.worker.dtos.ActivityResult;
+
 public class AppealDecisionResult extends ActivityResult {
     private boolean appealGranted;
     private String decisionReason;

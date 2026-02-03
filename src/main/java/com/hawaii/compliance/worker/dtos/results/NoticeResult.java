@@ -1,5 +1,7 @@
 package com.hawaii.compliance.worker.dtos.results;
 
+import com.hawaii.compliance.worker.dtos.ActivityResult;
+
 public class NoticeResult extends ActivityResult {
     private String noticeId;
     private String noticeType;

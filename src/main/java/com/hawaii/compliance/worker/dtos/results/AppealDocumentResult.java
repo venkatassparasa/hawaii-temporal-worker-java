@@ -1,5 +1,7 @@
 package com.hawaii.compliance.worker.dtos.results;
 
+import com.hawaii.compliance.worker.dtos.ActivityResult;
+
 public class AppealDocumentResult extends ActivityResult {
     private String documentId;
     private String documentType;

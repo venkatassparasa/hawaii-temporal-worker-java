@@ -2,6 +2,9 @@ package com.hawaii.compliance.worker.workflows.impl;
 
 import com.hawaii.compliance.worker.activities.ComplianceActivities;
 import com.hawaii.compliance.worker.dtos.*;
+import com.hawaii.compliance.worker.dtos.results.InitialReviewResult;
+import com.hawaii.compliance.worker.dtos.results.NCUCResult;
+import com.hawaii.compliance.worker.dtos.results.RegistrationResult;
 import com.hawaii.compliance.worker.workflows.TVRRegistrationWorkflow;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.Workflow;
