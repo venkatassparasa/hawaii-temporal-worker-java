@@ -1,0 +1,46 @@
+package com.hawaii.compliance.worker.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import io.temporal.worker.Worker;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api")
+public class HealthController {
+
+    @Autowired(required = false)
+    private Worker worker;
+
+    @GetMapping("/health")
+    public Map<String, Object> health() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "healthy");
+        response.put("service", "Hawaii Compliance Temporal Worker");
+        response.put("timestamp", System.currentTimeMillis());
+        response.put("workerRunning", worker != null);
+        
+        if (worker != null) {
+            response.put("taskQueue", worker.getTaskQueue());
+            response.put("namespace", worker.getNamespace());
+        }
+        
+        return response;
+    }
+
+    @GetMapping("/info")
+    public Map<String, Object> info() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("service", "Hawaii Compliance Temporal Worker");
+        response.put("version", "1.0.0");
+        response.put("description", "Temporal Worker for Hawaii Compliance Dashboard");
+        response.put("workflows", new String[]{"TVRRegistrationWorkflow", "ComplaintInvestigationWorkflow", "ViolationAppealWorkflow", "AnnualInspectionWorkflow"});
+        response.put("activities", new String[]{"performInitialReview", "verifyZoning", "processNCUC", "scheduleInspection", "finalizeRegistration", "performInitialAssessment", "collectEvidence", "conductSiteVisit", "generateInvestigationReport", "determineViolations", "generateNotice", "reviewAppealDocuments", "performLegalReview", "scheduleHearing", "makeAppealDecision", "notifyAppealDecision", "scheduleInspectionDate", "conductOnSiteInspection", "generateInspectionReport", "scheduleFollowUp", "verifyCompliance"});
+        
+        return response;
+    }
+}
